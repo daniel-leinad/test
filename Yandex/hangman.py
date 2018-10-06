@@ -1,4 +1,5 @@
 import random
+import request
 
 
 def printtheword(w, gl):  # печатает слово с пропусками в необходимых местах
@@ -51,7 +52,6 @@ def drawthehuman(g):  #  рисует виселицу, g - число неуд�
 
 
 print("Ваша тема - животные")
-theme = input("Pozhaluysta, vyberite temu, vvedya nuzhnoe chislo: ")
 
 
 word = random.choice(thelist)[:-1]
