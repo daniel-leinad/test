@@ -1,85 +1,92 @@
 import random
-import request
+import requests
 
 
 def printtheword(w, gl):  # печатает слово с пропусками в необходимых местах
     amountofletters = 0
-    res = ""
+    res = ''
     if w[0] in gl:
         res += w[0]
         amountofletters += 1
     else:
-        res += "_"
+        res += '_'
     for i in range(1, len(w)):
-        res += " "
+        res += ' '
         if w[i] in gl:
             res += w[i]
             amountofletters += 1
         else:
-            res += "_"
+            res += '_'
     print(res)
-    return amountofletters
+    return amountofletters  # возвращает количество угаданных букв в слове
 
 
 def drawthehuman(g):  #  рисует виселицу, g - число неудачных попыток
-    s = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
-    s[0] = "     /"
-    s[1] = "     / \\"
-    s[2] = "      _\n     / \\"
-    s[3] = "     |_\n     / \\"
-    s[4] = "     |\n     |_\n     / \\"
-    s[5] = "     |\n     |\n     |_\n     / \\"
-    s[6] = "    _\n     |\n     |\n     |_\n     / \\"
-    s[7] = "   __\n     |\n     |\n     |_\n     / \\"
-    s[8] = "   __\n  |  |\n     |\n     |_\n     / \\"
-    s[9] = "   __\n  |  |\n  O  |\n     |_\n     / \\"
-    s[10] = "   __\n  |  |\n  O  |\n  |  |_\n     / \\"
-    s[11] = "   __\n  |  |\n  O  |\n /|  |_\n     / \\"
-    s[12] = "   __\n  |  |\n  O  |\n /|\\ |_\n     / \\"
-    s[13] = "   __\n  |  |\n  O  |\n /|\\ |_\n /   / \\"
-    s[14] = "   __\n  |  |\n  O  |\n /|\\ |_\n / \\ / \\"
+    s = []
+    s.append('     /')
+    s.append('     / \\')
+    s.append('      _\n     / \\')
+    s.append('     |_\n     / \\')
+    s.append('     |\n     |_\n     / \\')
+    s.append('     |\n     |\n     |_\n     / \\')
+    s.append('    _\n     |\n     |\n     |_\n     / \\')
+    s.append('   __\n     |\n     |\n     |_\n     / \\')
+    s.append('   __\n  |  |\n     |\n     |_\n     / \\')
+    s.append('   __\n  |  |\n  O  |\n     |_\n     / \\')
+    s.append('   __\n  |  |\n  O  |\n  |  |_\n     / \\')
+    s.append('   __\n  |  |\n  O  |\n /|  |_\n     / \\')
+    s.append('   __\n  |  |\n  O  |\n /|\\ |_\n     / \\')
+    s.append('   __\n  |  |\n  O  |\n /|\\ |_\n /   / \\')
+    s.append('   __\n  |  |\n  O  |\n /|\\ |_\n / \\ / \\')
     if g > 0:
         print(s[g-1])
+    print()  # для красоты
 
 
-"""
+'''
    __
   |  |
   O  |
  /|\ |_
  / \ / \
-"""
+'''
 
 
-print("Ваша тема - животные")
+animals = requests.get('https://raw.githubusercontent.com/guitrst/test/master/Yandex/animals.txt').content.decode('utf-8')
+thelist = animals.split('\n')[:-1]  # список слов, последний элемент - всегда пустая строка
+guessedletters = []  # угаданные буквы
+unguessedletters = []  # неугаданные буквы
+word = random.choice(thelist)  # слово, которое будет угадываться
+guesses = 0  # неудачные попытки
 
 
-word = random.choice(thelist)[:-1]
-# ugadannye bukvy
-guessedletters = []
-guesses = 0
-print("U vas est 15 popytok chtoby ugadat slovo iz "+str(len(word))+" bukv")
+print('Ваша тема - животные')
+print('У вас есть 15 попыток, чтобы угадать слово из '+str(len(word))+' букв')
 while guesses < 15:
-    drawthehuman(guesses)
-    aol = printtheword(word, guessedletters)
-    if aol == len(word):
-        break
-    newletter = input("Vvedite bukvu: ")
-    print("")
-    if newletter.lower() in guessedletters:
-        print("Etu bukva uzhe byla nazvana")
+    print()  # для красоты
+    newletter = input('Введите букву: ')
+    if newletter.lower() in guessedletters or newletter.lower() in unguessedletters:
+        print('Эта буква уже была названа')
+        continue
     elif len(newletter) == 1 and newletter.isalpha():
-        if newletter.lower() in word:
-            print("Kruto!")
+        if newletter.lower() in word:  # случай если пользователь угадал букву
+            print('Да!')
             guessedletters.append(newletter.lower())
-        else:
-            print("Nekruto!")
-            guesses += 1
+        else:  # случай если пользователь не угадал букву
+            print('Нет.')
+            unguessedletters.append(newletter.lower())
+            guesses += 1  # увеличиваем число неудачных попыток
     else:
-        print("Eto ne bukva")
+        print('Это не буква')
+        continue
+    drawthehuman(guesses)  # рисуем виселицу
+    aol = printtheword(word, guessedletters)  # aol - количество угаданных букв в слове
+    if aol == len(word):
+        break  # цикл кончается в случае выигрыша
+
+
 if newletter.lower() in guessedletters:
-    print("")
-    print("Wow krasava!")
+    print('Победа!')
 else:
     drawthehuman(guesses)
-    print("Ty proigral haha!")
+    print('Проигрыш.')
